@@ -77,6 +77,9 @@ public sealed class GrabbedRigidbodyDragSession
 
         _dragSurface = dragSurface;
 
+        if (grabbable is IGrabLifecycle grabLife)
+            grabLife.OnGrabSessionStarting(pickRay);
+
         _prevKinematic = rb.isKinematic;
         _prevUseGravity = rb.useGravity;
         _prevConstraints = rb.constraints;
@@ -139,6 +142,7 @@ public sealed class GrabbedRigidbodyDragSession
             return;
 
         var rb = _heldBody;
+        var held = _held;
 
         rb.isKinematic = _prevKinematic;
         rb.useGravity = _prevUseGravity;
@@ -157,6 +161,9 @@ public sealed class GrabbedRigidbodyDragSession
                     rb.linearVelocity *= mult;
             }
         }
+
+        if (held is IGrabLifecycle grabLife)
+            grabLife.OnGrabSessionEnded(preserveVelocities);
 
         _held = null;
         _heldBody = null;

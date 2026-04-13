@@ -1,0 +1,19 @@
+{
+  "name": "PhoneService.Phone",
+  "rootNamespace": "",
+  "references": [
+    "GUID:311f5c0c021ae4f4b9256a0e4a0cd3ab",
+    "PhoneService.PhonePartsDatabase"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [
+    "Sirenix.OdinInspector.Attributes.dll"
+  ],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
