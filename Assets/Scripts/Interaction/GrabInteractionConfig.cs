@@ -43,7 +43,14 @@ public class GrabInteractionConfig : ScriptableObject
     private float _angularDragWhileHeld = 8f;
 
     /// <summary>
-    /// Если расстояние от тела до целевой точки курсора превышает это значение, захват срывается (застревание / увод курсора).
+    /// Если включено, захват срывается при слишком большом расстоянии ЦМ до цели (старое поведение).
+    /// По умолчанию выключено: цель на краю плоскости при уводе курсора, объект скользит по границе, а не отпускается.
+    /// </summary>
+    [SerializeField]
+    private bool _breakGrabWhenTargetTooFar;
+
+    /// <summary>
+    /// Порог расстояния ЦМ — цель для срыва (только если включён срыв по расстоянию).
     /// </summary>
     [SerializeField]
     private float _breakGrabDistance = 2.5f;
@@ -83,6 +90,11 @@ public class GrabInteractionConfig : ScriptableObject
     /// Демпфирование угловой скорости при удержании.
     /// </summary>
     public float AngularDragWhileHeld => _angularDragWhileHeld;
+
+    /// <summary>
+    /// Включён ли срыв захвата по расстоянию до цели.
+    /// </summary>
+    public bool BreakGrabWhenTargetTooFar => _breakGrabWhenTargetTooFar;
 
     /// <summary>
     /// Порог расстояния для срыва захвата.

@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: PhoneService.Interaction::GrabInteractionConfig
   _grabbableLayers:
     serializedVersion: 2
-    m_Bits: 63
+    m_Bits: 8
   _maxPickDistance: 100
   _releaseVelocityMultiplier: 1
-  _blockWhenPointerOverUi: 1
+  _springStrength: 90
+  _dragVelocityDamping: 14
+  _angularDragWhileHeld: 8
+  _breakGrabDistance: 2.5
+  _breakGrabGraceTime: 0.12

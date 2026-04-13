@@ -11,7 +11,7 @@ public interface IGrabbable
     Rigidbody PhysicsBody { get; }
 
     /// <summary>
-    /// Дополнительное смещение вдоль мирового вверх от плоскости перетаскивания при удержании.
+    /// Смещение цели от плоскости вдоль нормали поверхности (<see cref="UnityEngine.Transform.up"/> корня плоскости в реестре).
     /// </summary>
     float HoldHeightOffset { get; }
 
@@ -19,4 +19,9 @@ public interface IGrabbable
     /// Если true, при удержании к телу добавляется заморозка вращения.
     /// </summary>
     bool FreezeRotationWhileHeld { get; }
+
+    /// <summary>
+    /// Идентификатор поверхности в <see cref="DragSurfaceRegistry"/> (проекция курсора и границы drag).
+    /// </summary>
+    string DragSurfaceId { get; }
 }

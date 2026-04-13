@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -8,9 +10,17 @@ using UnityEngine.Serialization;
 public class Grabbable : MonoBehaviour, IGrabbable
 {
     /// <summary>
+    /// Имя поверхности из <see cref="DragSurfaceRegistry"/> на сцене (список собирается в редакторе).
+    /// </summary>
+    [Tooltip("Id поверхности из Drag Surface Registry (Table, Wall, …).")]
+    [ValueDropdown(nameof(EditorDragSurfaceIds), IsUniqueList = false, DropdownTitle = "Поверхности")]
+    [SerializeField]
+    private string _dragSurfaceId;
+
+    /// <summary>
     /// Смещение вдоль мирового вверх от плоскости перетаскивания в инспекторе.
     /// </summary>
-    [Tooltip("Смещение вдоль мирового вверх от плоскости перетаскивания, пока объект удерживается.")]
+    [Tooltip("Смещение цели от плоскости вдоль её нормали (Transform.up корня в Drag Surface Registry).")]
     [FormerlySerializedAs("holdHeightOffset")]
     [SerializeField]
     private float _holdHeightOffset;
@@ -36,6 +46,9 @@ public class Grabbable : MonoBehaviour, IGrabbable
     /// <inheritdoc />
     public bool FreezeRotationWhileHeld => _freezeRotationWhileHeld;
 
+    /// <inheritdoc />
+    public string DragSurfaceId => _dragSurfaceId;
+
     /// <summary>
     /// Кэширует <see cref="Rigidbody"/> для <see cref="PhysicsBody"/>.
     /// </summary>
@@ -43,4 +56,16 @@ public class Grabbable : MonoBehaviour, IGrabbable
     {
         _rigidbody = GetComponent<Rigidbody>();
     }
+
+#if UNITY_EDITOR
+    /// <summary>
+    /// Источник имён для Odin: все <see cref="DragSurfaceRegistry"/> в открытых сценах.
+    /// </summary>
+    private static IEnumerable<string> EditorDragSurfaceIds() => DragSurfaceRegistry.EditorEnumerateIds();
+#else
+    private static IEnumerable<string> EditorDragSurfaceIds()
+    {
+        yield break;
+    }
+#endif
 }

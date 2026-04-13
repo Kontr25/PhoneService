@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Сессия перетаскивания: динамическое <see cref="Rigidbody"/>, силы к точке на плоскости в фиксированном шаге,
-/// срыв при превышении расстояния до цели (застревание / сильный увод курсора).
+/// опциональный срыв по расстоянию до цели (в конфиге по умолчанию выключен).
 /// </summary>
 public sealed class GrabbedRigidbodyDragSession
 {
@@ -22,9 +22,9 @@ public sealed class GrabbedRigidbodyDragSession
     private Rigidbody _heldBody;
 
     /// <summary>
-    /// Плоскость перетаскивания.
+    /// Именованная поверхность: проекция луча и кламп по мешу.
     /// </summary>
-    private Plane _dragPlane;
+    private DragSurfaceSolver _dragSurface;
 
     /// <summary>
     /// Время захвата (<see cref="Time.time"/>) для grace до проверки срыва.
@@ -61,12 +61,12 @@ public sealed class GrabbedRigidbodyDragSession
     public bool IsActive => _held != null;
 
     /// <summary>
-    /// Начинает удержание: плоскость по точке попадания, тело остаётся/становится динамическим для коллизий.
+    /// Начинает удержание: цель на именованной поверхности, тело остаётся/становится динамическим для коллизий.
     /// </summary>
-    /// <param name="hit">Попадание луча.</param>
     /// <param name="grabbable">Контракт.</param>
     /// <param name="pickRay">Луч для начальной цели на плоскости.</param>
-    public void Begin(in RaycastHit hit, IGrabbable grabbable, Ray pickRay)
+    /// <param name="dragSurface">Поверхность из <see cref="DragSurfaceRegistry"/>.</param>
+    public void Begin(IGrabbable grabbable, Ray pickRay, DragSurfaceSolver dragSurface)
     {
         if (IsActive)
             End(false);
@@ -75,7 +75,7 @@ public sealed class GrabbedRigidbodyDragSession
         _held = grabbable;
         _heldBody = rb;
 
-        _dragPlane = new Plane(Vector3.up, hit.point);
+        _dragSurface = dragSurface;
 
         _prevKinematic = rb.isKinematic;
         _prevUseGravity = rb.useGravity;
@@ -89,9 +89,8 @@ public sealed class GrabbedRigidbodyDragSession
 
         _grabTime = Time.time;
 
-        if (_dragPlane.Raycast(pickRay, out var enter))
+        if (_dragSurface.TryProjectRay(pickRay, _held.HoldHeightOffset, out var target))
         {
-            var target = pickRay.GetPoint(enter) + Vector3.up * _held.HoldHeightOffset;
             var delta = target - rb.worldCenterOfMass;
             if (delta.sqrMagnitude > 1e-6f)
                 rb.AddForce(delta * _config.SpringStrength, ForceMode.Force);
@@ -108,16 +107,13 @@ public sealed class GrabbedRigidbodyDragSession
         if (!IsActive)
             return;
 
-        var ray = camera.ScreenPointToRay(screenPoint);
-
-        if (!_dragPlane.Raycast(ray, out var enter))
+        if (!_dragSurface.TryProjectScreen(camera, screenPoint, _held.HoldHeightOffset, out var target))
             return;
-
-        var target = ray.GetPoint(enter) + Vector3.up * _held.HoldHeightOffset;
         var bodyPoint = _heldBody.worldCenterOfMass;
         var error = target - bodyPoint;
 
-        if (Time.time >= _grabTime + _config.BreakGrabGraceTime &&
+        if (_config.BreakGrabWhenTargetTooFar &&
+            Time.time >= _grabTime + _config.BreakGrabGraceTime &&
             error.magnitude > _config.BreakGrabDistance)
         {
             End(true);
@@ -164,5 +160,6 @@ public sealed class GrabbedRigidbodyDragSession
 
         _held = null;
         _heldBody = null;
+        _dragSurface = null;
     }
 }

@@ -37,6 +37,13 @@ public class GrabInteractionController : MonoBehaviour
     private GrabInteractionConfig _config;
 
     /// <summary>
+    /// Реестр именованных плоскостей на сцене (Table, Wall, …).
+    /// </summary>
+    [Tooltip("Реестр плоскостей: id должны совпадать с Grabbable.DragSurfaceId.")]
+    [SerializeField]
+    private DragSurfaceRegistry _dragSurfaces;
+
+    /// <summary>
     /// Кэш экшена позиции.
     /// </summary>
     private InputAction _pointAction;
@@ -132,9 +139,10 @@ public class GrabInteractionController : MonoBehaviour
     {
         var screenPoint = _pointAction.ReadValue<Vector2>();
 
-        if (!_selector.TrySelect(_targetCamera, screenPoint, out var ray, out var hit, out var grabbable))
+        if (!_selector.TrySelect(_targetCamera, screenPoint, out var ray, out _, out var grabbable))
             return;
 
-        _session.Begin(hit, grabbable, ray);
+        var surface = _dragSurfaces.Resolve(grabbable.DragSurfaceId);
+        _session.Begin(grabbable, ray, surface);
     }
 }

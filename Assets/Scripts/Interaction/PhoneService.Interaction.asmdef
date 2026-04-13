@@ -8,7 +8,9 @@
   "excludePlatforms": [],
   "allowUnsafeCode": false,
   "overrideReferences": false,
-  "precompiledReferences": [],
+  "precompiledReferences": [
+    "Sirenix.OdinInspector.Attributes.dll"
+  ],
   "autoReferenced": true,
   "defineConstraints": [],
   "versionDefines": [],
