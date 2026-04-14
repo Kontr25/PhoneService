@@ -97,8 +97,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: PhoneService.Phone::PhoneRepairPart
   _dragSurfaceId: Details
   _holdHeightOffset: 0
-  _freezeRotationWhileHeld: 1
-  _partType: {fileID: 11400000, guid: 887c0a29fb452fa42823dce767e24e2b, type: 2}
+  _freezeRotationWhileHeld: 0
+  _rigidbody: {fileID: 5589031905929889952}
+  _grabColliders:
+  - {fileID: 6365422504869913900}
+  _installPreviewMeshFilter: {fileID: 1209634124753384823}
+  _partTypeId: 
+  _partBrandId: 
+  _partModelName: 
+  _downRayMask:
+    serializedVersion: 2
+    m_Bits: 127
+  _downRayLength: 12
+  _installTweenDuration: 0.35
+  _installEase: 6
+  _wrongTypeBounceImpulse: 3
 --- !u!1 &4355322070646242047
 GameObject:
   m_ObjectHideFlags: 0

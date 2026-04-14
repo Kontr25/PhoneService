@@ -90,7 +90,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7155157219845739988, guid: ec46fc31c20307743a4ec221d81d2dda, type: 3}
       propertyPath: _partBrandId
-      value: ITelephone
+      value: IPhone
       objectReference: {fileID: 0}
     - target: {fileID: 7155157219845739988, guid: ec46fc31c20307743a4ec221d81d2dda, type: 3}
       propertyPath: _partSubtype
@@ -104,6 +104,14 @@ PrefabInstance:
       propertyPath: _partModelName
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 7155157219845739988, guid: ec46fc31c20307743a4ec221d81d2dda, type: 3}
+      propertyPath: _downRayMask.m_Bits
+      value: 127
+      objectReference: {fileID: 0}
+    - target: {fileID: 7155157219845739988, guid: ec46fc31c20307743a4ec221d81d2dda, type: 3}
+      propertyPath: _installPreviewMesh
+      value: 
+      objectReference: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4591139628841170849}
   - component: {fileID: 4396927612249607268}
+  - component: {fileID: 4412345678901234501}
   m_Layer: 0
   m_Name: Phone
   m_TagString: Untagged
@@ -46,13 +47,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6e38ce272f99774fb67bc677d0464e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PhoneService.Phone::PhoneController
-  _phoneBrandId: ITelephone
+  _phoneBrandId: IPhone
   _phoneModelName: 10
+  _slotService: {fileID: 4412345678901234501}
+--- !u!114 &4412345678901234501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 232961688371815566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8c9d0e1f2a34567890123456789abc0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PhoneService.Phone::PhoneSlotService
   _slots:
-  - _socket: {fileID: 2308762793403147058}
-    _acceptedPartTypeId: Camera
-  - _socket: {fileID: 1371096558460906895}
-    _acceptedPartTypeId: Battery
+  - {fileID: 5011111111111111101}
+  - {fileID: 5022222222222222202}
+  _host: {fileID: 4396927612249607268}
 --- !u!1 &578539895309302438
 GameObject:
   m_ObjectHideFlags: 0
@@ -174,6 +187,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1371096558460906895}
+  - component: {fileID: 7534040039335702369}
+  - component: {fileID: 2672891390827770199}
+  - component: {fileID: 5022222222222222202}
   m_Layer: 0
   m_Name: BatterySlot
   m_TagString: Untagged
@@ -197,6 +213,59 @@ Transform:
   - {fileID: 6062865320513633852}
   m_Father: {fileID: 2479607182132535155}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7534040039335702369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2888211072386813796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14aa3fbdf42f9c24facaacdb29495efd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PhoneService.Phone::PhoneRepairSlotMarker
+  _phone: {fileID: 4396927612249607268}
+  _slotIndex: 1
+  _triggerCollider: {fileID: 2672891390827770199}
+--- !u!65 &2672891390827770199
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2888211072386813796}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 0.14, z: 2}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5022222222222222202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2888211072386813796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ce8f3a2d1b04c5e9a8f7463528190ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PhoneService.Phone::PhonePartInstallSlot
+  _socket: {fileID: 1371096558460906895}
+  _acceptedPartTypeId: Battery
+  _installPreviewMeshFilter: {fileID: 3026297895642761950}
+  _installPreviewRenderer: {fileID: 2799203199613862019}
+  _initialInstalledPart: {fileID: 0}
 --- !u!1 &3294564404169217678
 GameObject:
   m_ObjectHideFlags: 0
@@ -206,6 +275,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2308762793403147058}
+  - component: {fileID: 7964619583951637778}
+  - component: {fileID: 2261594167806410858}
+  - component: {fileID: 5011111111111111101}
   m_Layer: 0
   m_Name: CameraSlot
   m_TagString: Untagged
@@ -229,6 +301,59 @@ Transform:
   - {fileID: 5872505698377812671}
   m_Father: {fileID: 2479607182132535155}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7964619583951637778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3294564404169217678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14aa3fbdf42f9c24facaacdb29495efd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PhoneService.Phone::PhoneRepairSlotMarker
+  _phone: {fileID: 4396927612249607268}
+  _slotIndex: 0
+  _triggerCollider: {fileID: 2261594167806410858}
+--- !u!65 &2261594167806410858
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3294564404169217678}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.7, y: 0.14, z: 0.7}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5011111111111111101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3294564404169217678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ce8f3a2d1b04c5e9a8f7463528190ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PhoneService.Phone::PhonePartInstallSlot
+  _socket: {fileID: 2308762793403147058}
+  _acceptedPartTypeId: Camera
+  _installPreviewMeshFilter: {fileID: 1096680679308320844}
+  _installPreviewRenderer: {fileID: 6469116333927187250}
+  _initialInstalledPart: {fileID: 0}
 --- !u!1 &4083909940184810093
 GameObject:
   m_ObjectHideFlags: 0
@@ -246,7 +371,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6062865320513633852
 Transform:
   m_ObjectHideFlags: 0
@@ -336,7 +461,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5872505698377812671
 Transform:
   m_ObjectHideFlags: 0

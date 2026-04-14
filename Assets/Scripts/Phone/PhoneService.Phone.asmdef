@@ -3,14 +3,16 @@
   "rootNamespace": "",
   "references": [
     "GUID:311f5c0c021ae4f4b9256a0e4a0cd3ab",
-    "PhoneService.PhonePartsDatabase"
+    "PhoneService.PhonePartsDatabase",
+    "Zenject"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
   "overrideReferences": false,
   "precompiledReferences": [
-    "Sirenix.OdinInspector.Attributes.dll"
+    "Sirenix.OdinInspector.Attributes.dll",
+    "DOTween.dll"
   ],
   "autoReferenced": true,
   "defineConstraints": [],

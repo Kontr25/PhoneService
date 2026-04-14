@@ -104,6 +104,8 @@ public sealed class PhonePartsDatabaseEditorWindow : EditorWindow
         EditorGUILayout.Space(6f);
         var brandsProp = _serializedDatabase.FindProperty("_brands");
         var partTypesProp = _serializedDatabase.FindProperty("_partTypes");
+        var validMatProp = _serializedDatabase.FindProperty("_validSlotPreviewMaterial");
+        var invalidMatProp = _serializedDatabase.FindProperty("_invalidSlotPreviewMaterial");
         if (brandsProp == null || partTypesProp == null)
         {
             EditorGUILayout.HelpBox("Не найдены поля _brands / _partTypes.", MessageType.Error);
@@ -111,6 +113,12 @@ public sealed class PhonePartsDatabaseEditorWindow : EditorWindow
         }
 
         _scroll = EditorGUILayout.BeginScrollView(_scroll);
+        EditorGUILayout.LabelField("Материалы превью установки в слот", EditorStyles.boldLabel);
+        if (validMatProp != null)
+            EditorGUILayout.PropertyField(validMatProp, new GUIContent("Подходит"));
+        if (invalidMatProp != null)
+            EditorGUILayout.PropertyField(invalidMatProp, new GUIContent("Не подходит"));
+        EditorGUILayout.Space(8f);
         EditorGUILayout.PropertyField(brandsProp, new GUIContent("Бренды и модели телефонов"), true);
         EditorGUILayout.Space(6f);
         EditorGUILayout.PropertyField(partTypesProp, new GUIContent("Типы запчастей (для всех телефонов)"), true);
