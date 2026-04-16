@@ -12,18 +12,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aeaf86cee7296bc458d42e0f67eeea4b, type: 3}
   m_Name: PhonePartsDatabase
   m_EditorClassIdentifier: PhoneService.PhonePartsDatabase::PhonePartsDatabase
-  _brands:
-  - _brandId: IPhone
+  _phoneCatalog:
+  - _phoneName: IPhone
     _displayName: "\u0410\u0439\u0444\u043E\u043D"
     _models:
     - 10
-    - 11
-  _partTypes:
-  - _typeId: Battery
+    - 15
+  - _phoneName: Samsung
+    _displayName: "\u0421\u0430\u043C\u0441\u0443\u043D\u0433"
+    _models:
+    - 55 Pro
+    - S64 Ultra
+  - _phoneName: Honor
+    _displayName: "\u0425\u043E\u043D\u043E\u0440"
+    _models:
+    - 10
+    - 12 Lite
+    - 89 Ultra
+  _partCategories:
+  - _categoryId: Battery
     _displayName: "\u0410\u043A\u043A\u0443\u043C\u0443\u043B\u044F\u0442\u043E\u0440"
     _icon: {fileID: 0}
-  - _typeId: Camera
+  - _categoryId: Camera
     _displayName: "\u041A\u0430\u043C\u0435\u0440\u0430"
     _icon: {fileID: 0}
+  - _categoryId: Display
+    _displayName: "\u0414\u0438\u0441\u043F\u043B\u0435\u0439"
+    _icon: {fileID: 0}
+  - _categoryId: Port
+    _displayName: "\u041D\u043E\u0432\u0430\u044F \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F"
+    _icon: {fileID: 0}
+  _partRecords:
+  - _recordId: battery_iphone_10_original
+    _partCategoryId: Battery
+    _phoneName: IPhone
+    _phoneModelName: 10
+    _partQualityType: 0
+    _cost: 0
+    _description: 
+    _partPrefab: {fileID: 0}
+    _partMesh: {fileID: 0}
+    _partMaterial: {fileID: 0}
+  - _recordId: display_iphone_10_original
+    _partCategoryId: Display
+    _phoneName: IPhone
+    _phoneModelName: 10
+    _partQualityType: 0
+    _cost: 2000
+    _description: 
+    _partPrefab: {fileID: 0}
+    _partMesh: {fileID: 0}
+    _partMaterial: {fileID: 0}
+  - _recordId: port_honor_89_ultra_original
+    _partCategoryId: Port
+    _phoneName: Honor
+    _phoneModelName: 89 Ultra
+    _partQualityType: 0
+    _cost: 3000
+    _description: dghmndhgn
+    _partPrefab: {fileID: 0}
+    _partMesh: {fileID: 0}
+    _partMaterial: {fileID: 0}
   _validSlotPreviewMaterial: {fileID: 2100000, guid: fcc38ed2d63250342bfcc9819164aecd, type: 2}
   _invalidSlotPreviewMaterial: {fileID: 2100000, guid: f0945041237406b42aaa8a3bffa36a3c, type: 2}

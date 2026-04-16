@@ -30,11 +30,11 @@ public sealed class PhonePartInstallMotion : IPhonePartInstallMotion
     }
 
     /// <inheritdoc />
-    public void ApplyWrongTypeBounce(PhoneRepairPart part, float impulseMagnitude)
+    public void ApplyWrongCategoryBounce(PhoneRepairPart part, float impulseMagnitude)
     {
         if (part == null)
             return;
 
-        part.DoRigidbodyApplyWrongTypeBounce(impulseMagnitude);
+        part.DoRigidbodyApplyWrongCategoryBounce(impulseMagnitude);
     }
 }

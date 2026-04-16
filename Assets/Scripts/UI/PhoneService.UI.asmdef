@@ -1,0 +1,17 @@
+{
+    "name": "PhoneService.Inventory",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e0c9f177b3961374bbce2e54a72f9239",
+        "GUID:b3cb3c69c69a5fd4bbc3c7822922035a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

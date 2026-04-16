@@ -11,21 +11,21 @@ public sealed class PhoneInstallFitEvaluator : IPhoneInstallFitEvaluator
         if (part == null || slot == null || phone == null)
             return SlotInstallFit.None;
 
-        if (!slot.AcceptsPartType(part.PartTypeId))
-            return SlotInstallFit.WrongType;
+        if (!slot.AcceptsPartCategory(part.PartCategoryId))
+            return SlotInstallFit.WrongCategory;
 
         if (!phone.HasPhoneModelSpecified || !part.HasModelSpecified)
-            return SlotInstallFit.WrongType;
+            return SlotInstallFit.WrongCategory;
 
         return PartMatchesPhoneModel(phone, part) ? SlotInstallFit.FullMatch : SlotInstallFit.WrongModel;
     }
 
     /// <summary>
-    /// Совпадение бренда и модели детали с телефоном.
+    /// Совпадение названия телефона и модели детали с телефоном.
     /// </summary>
     private static bool PartMatchesPhoneModel(IPhoneModelIdentity phone, PhoneRepairPart part)
     {
-        return string.Equals(phone.PhoneBrandId, part.PartBrandId, StringComparison.Ordinal)
+        return string.Equals(phone.PhoneName, part.PartPhoneName, StringComparison.Ordinal)
                && string.Equals(phone.PhoneModelName, part.PartModelName, StringComparison.Ordinal);
     }
 }

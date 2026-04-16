@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 /// <summary>
-/// Слот на сцене: сокет, фильтр типа запчасти, превью меша и материала; учёт слотов — в <see cref="PhoneSlotService"/>.
+/// Слот на сцене: сокет, фильтр категории запчасти, превью меша и материала; учёт слотов — в <see cref="PhoneSlotService"/>.
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class PhonePartInstallSlot : MonoBehaviour, IPhoneRepairSlot
@@ -17,12 +18,13 @@ public sealed class PhonePartInstallSlot : MonoBehaviour, IPhoneRepairSlot
     private Transform _socket;
 
     /// <summary>
-    /// Ожидаемый Type Id запчасти; пустая строка — любой тип.
+    /// Ожидаемый Category Id запчасти; пустая строка — любая категория.
     /// </summary>
-    [Tooltip("Тип запчасти из базы (battery, camera…). Пусто — любой тип.")]
-    [ValueDropdown(nameof(EditorPartTypeItems), IsUniqueList = false, DropdownTitle = "Тип запчасти")]
+    [FormerlySerializedAs("_acceptedPartTypeId")]
+    [Tooltip("Категория запчасти из базы (battery, camera…). Пусто — любая категория.")]
+    [ValueDropdown(nameof(EditorPartCategoryItems), IsUniqueList = false, DropdownTitle = "Категория запчасти")]
     [SerializeField]
-    private string _acceptedPartTypeId;
+    private string _acceptedPartCategoryId;
 
     /// <summary>
     /// Фильтр меша объекта превью установки.
@@ -85,16 +87,16 @@ public sealed class PhonePartInstallSlot : MonoBehaviour, IPhoneRepairSlot
     public Transform Socket => _socket != null ? _socket : transform;
 
     /// <inheritdoc />
-    public bool AcceptsPartType(string partTypeId)
+    public bool AcceptsPartCategory(string partCategoryId)
     {
-        var req = string.IsNullOrWhiteSpace(_acceptedPartTypeId) ? string.Empty : _acceptedPartTypeId.Trim();
+        var req = string.IsNullOrWhiteSpace(_acceptedPartCategoryId) ? string.Empty : _acceptedPartCategoryId.Trim();
         if (string.IsNullOrEmpty(req))
             return true;
 
-        if (string.IsNullOrWhiteSpace(partTypeId))
+        if (string.IsNullOrWhiteSpace(partCategoryId))
             return false;
 
-        return string.Equals(req, partTypeId.Trim(), StringComparison.Ordinal);
+        return string.Equals(req, partCategoryId.Trim(), StringComparison.Ordinal);
     }
 
     /// <summary>
@@ -139,15 +141,15 @@ public sealed class PhonePartInstallSlot : MonoBehaviour, IPhoneRepairSlot
 
 #if UNITY_EDITOR
     /// <summary>
-    /// Элементы выпадающего списка типов запчастей для Odin.
+    /// Элементы выпадающего списка категорий запчастей для Odin.
     /// </summary>
-    private IEnumerable<ValueDropdownItem<string>> EditorPartTypeItems() =>
-        PhonePartsDatabaseDropdowns.PartTypeItems(includeAnyOption: true);
+    private IEnumerable<ValueDropdownItem<string>> EditorPartCategoryItems() =>
+        PhonePartsDatabaseDropdowns.PartCategoryItems(includeAnyOption: true);
 #else
     /// <summary>
     /// Заглушка сборки без редактора.
     /// </summary>
-    private IEnumerable<ValueDropdownItem<string>> EditorPartTypeItems()
+    private IEnumerable<ValueDropdownItem<string>> EditorPartCategoryItems()
     {
         yield break;
     }

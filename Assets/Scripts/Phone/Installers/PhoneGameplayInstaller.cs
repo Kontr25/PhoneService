@@ -9,8 +9,7 @@ public sealed class PhoneGameplayInstaller : MonoInstaller
     /// <summary>
     /// Сфера-проб для выбора ближайшего слота по триггерам.
     /// </summary>
-    [SerializeField]
-    private PhoneSlotProbeSphere _slotProbeSphere;
+    [SerializeField] private PhoneSlotProbeSphere _slotProbeSphere;
     
     /// <inheritdoc />
     public override void InstallBindings()

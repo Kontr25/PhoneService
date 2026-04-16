@@ -109,7 +109,7 @@ public sealed class PhoneSlotService : MonoBehaviour, IPhoneSlotService
         if (part == null || !_host.HasPhoneModelSpecified || !part.HasModelSpecified)
             return false;
 
-        return string.Equals(_host.PhoneBrandId, part.PartBrandId, StringComparison.Ordinal)
+        return string.Equals(_host.PhoneName, part.PartPhoneName, StringComparison.Ordinal)
                && string.Equals(_host.PhoneModelName, part.PartModelName, StringComparison.Ordinal);
     }
 
@@ -175,7 +175,7 @@ public sealed class PhoneSlotService : MonoBehaviour, IPhoneSlotService
         if (!part.HasModelSpecified)
             return false;
 
-        if (!slot.AcceptsPartType(part.PartTypeId))
+        if (!slot.AcceptsPartCategory(part.PartCategoryId))
             return false;
 
         for (var j = 0; j < _occupants.Length; j++)

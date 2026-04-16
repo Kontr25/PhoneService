@@ -102,9 +102,14 @@ MonoBehaviour:
   _grabColliders:
   - {fileID: 6365422504869913900}
   _installPreviewMeshFilter: {fileID: 1209634124753384823}
-  _partTypeId: 
-  _partBrandId: 
+  _partMeshRenderer: {fileID: 186343394004493727}
+  _partRecordId: 
+  _partCategoryId: 
+  _partPhoneName: 
   _partModelName: 
+  _partQualityType: 0
+  _partCost: 0
+  _partDescription: 
   _downRayMask:
     serializedVersion: 2
     m_Bits: 127

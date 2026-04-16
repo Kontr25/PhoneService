@@ -19,7 +19,7 @@ public enum SlotInstallFit
     WrongModel,
 
     /// <summary>
-    /// Тип не подходит — отскок при отпускании.
+    /// Категория не подходит — отскок при отпускании.
     /// </summary>
-    WrongType
+    WrongCategory
 }

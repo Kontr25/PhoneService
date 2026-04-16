@@ -1,12 +1,12 @@
 /// <summary>
-/// Идентичность модели телефона (бренд + модель из базы).
+/// Идентичность модели телефона (название телефона + модель из базы).
 /// </summary>
 public interface IPhoneModelIdentity
 {
     /// <summary>
-    /// Brand Id телефона.
+    /// Название телефона.
     /// </summary>
-    string PhoneBrandId { get; }
+    string PhoneName { get; }
 
     /// <summary>
     /// Имя модели телефона.
@@ -14,7 +14,7 @@ public interface IPhoneModelIdentity
     string PhoneModelName { get; }
 
     /// <summary>
-    /// Заданы ли бренд и модель.
+    /// Заданы ли название телефона и модель.
     /// </summary>
     bool HasPhoneModelSpecified { get; }
 }

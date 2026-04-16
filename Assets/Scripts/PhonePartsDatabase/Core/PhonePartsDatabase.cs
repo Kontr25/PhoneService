@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
-/// База: бренды с моделями телефонов и отдельный список типов запчастей.
-/// У телефона задаётся модель; у слота — тип запчасти; у детали — тип + модель (бренд + модель), с чем сравнивается корпус.
+/// База: названия телефонов с моделями, категории запчастей и записи запчастей.
 /// </summary>
 [CreateAssetMenu(fileName = "PhonePartsDatabase", menuName = "PhoneService/Parts Database/Phone Parts Database")]
 public sealed class PhonePartsDatabase : ScriptableObject
@@ -15,16 +15,24 @@ public sealed class PhonePartsDatabase : ScriptableObject
     public const string ResourcesAssetName = "PhonePartsDatabase";
 
     /// <summary>
-    /// Бренды и их модели.
+    /// Названия телефонов и их модели.
     /// </summary>
+    [FormerlySerializedAs("_brands")]
     [SerializeField]
-    private PhoneBrandEntry[] _brands = Array.Empty<PhoneBrandEntry>();
+    private PhoneCatalogEntry[] _phoneCatalog = Array.Empty<PhoneCatalogEntry>();
 
     /// <summary>
-    /// Типы запчастей (для всех телефонов).
+    /// Категории запчастей (для всех телефонов).
+    /// </summary>
+    [FormerlySerializedAs("_partTypes")]
+    [SerializeField]
+    private PartCategoryEntry[] _partCategories = Array.Empty<PartCategoryEntry>();
+
+    /// <summary>
+    /// Полные записи запчастей.
     /// </summary>
     [SerializeField]
-    private PhonePartTypeEntry[] _partTypes = Array.Empty<PhonePartTypeEntry>();
+    private PartRecordEntry[] _partRecords = Array.Empty<PartRecordEntry>();
 
     /// <summary>
     /// Материал превью установки: деталь подходит слоту (тип и модель).
@@ -39,14 +47,19 @@ public sealed class PhonePartsDatabase : ScriptableObject
     private Material _invalidSlotPreviewMaterial;
 
     /// <summary>
-    /// Бренды (только чтение).
+    /// Телефоны (только чтение).
     /// </summary>
-    public IReadOnlyList<PhoneBrandEntry> Brands => _brands;
+    public IReadOnlyList<PhoneCatalogEntry> PhoneCatalog => _phoneCatalog;
 
     /// <summary>
-    /// Типы запчастей (только чтение).
+    /// Категории запчастей (только чтение).
     /// </summary>
-    public IReadOnlyList<PhonePartTypeEntry> PartTypes => _partTypes;
+    public IReadOnlyList<PartCategoryEntry> PartCategories => _partCategories;
+
+    /// <summary>
+    /// Записи запчастей (только чтение).
+    /// </summary>
+    public IReadOnlyList<PartRecordEntry> PartRecords => _partRecords;
 
     /// <summary>
     /// Материал превью «подходит».
@@ -59,147 +72,135 @@ public sealed class PhonePartsDatabase : ScriptableObject
     public Material InvalidSlotPreviewMaterial => _invalidSlotPreviewMaterial;
 
     /// <summary>
-    /// Id брендов по порядку.
+    /// В редакторе переносит устаревшие строковые списки моделей в записи <see cref="PhoneModelEntry"/>.
     /// </summary>
-    public IEnumerable<string> EnumerateBrandIds()
+    private void OnValidate()
     {
-        if (_brands == null)
+        if (_phoneCatalog == null)
+            return;
+
+        for (var i = 0; i < _phoneCatalog.Length; i++)
+            _phoneCatalog[i]?.MigrateLegacyIfNeeded();
+    }
+
+    /// <summary>
+    /// Модели для названия телефона.
+    /// </summary>
+    public IEnumerable<string> EnumerateModels(string phoneName)
+    {
+        var phone = FindPhone(phoneName);
+        if (phone == null)
             yield break;
 
-        for (var i = 0; i < _brands.Length; i++)
-        {
-            var id = _brands[i] != null ? _brands[i].BrandId : string.Empty;
-            if (string.IsNullOrEmpty(id))
-                continue;
-
-            yield return id;
-        }
+        foreach (var model in phone.EnumerateModelsTrimmed())
+            yield return model;
     }
 
     /// <summary>
-    /// Модели для бренда.
+    /// Категория запчасти существует в базе.
     /// </summary>
-    public IEnumerable<string> EnumerateModels(string brandId)
+    public bool ContainsPartCategory(string categoryId)
     {
-        var b = FindBrand(brandId);
-        if (b == null)
-            yield break;
-
-        foreach (var m in b.EnumerateModelsTrimmed())
-            yield return m;
+        return FindPartCategory(categoryId) != null;
     }
 
     /// <summary>
-    /// Id типов запчастей.
+    /// Модель у названия телефона есть в базе.
     /// </summary>
-    public IEnumerable<string> EnumeratePartTypeIds()
+    public bool ContainsPhoneModel(string phoneName, string modelName)
     {
-        if (_partTypes == null)
-            yield break;
-
-        for (var i = 0; i < _partTypes.Length; i++)
-        {
-            var id = _partTypes[i] != null ? _partTypes[i].TypeId : string.Empty;
-            if (string.IsNullOrEmpty(id))
-                continue;
-
-            yield return id;
-        }
+        var phone = FindPhone(phoneName);
+        return phone != null && phone.HasModel(modelName);
     }
 
     /// <summary>
-    /// Тип запчасти существует в базе.
+    /// Ищет запись телефона по названию.
     /// </summary>
-    public bool ContainsPartType(string typeId)
+    /// <param name="phoneName">Название телефона.</param>
+    /// <returns>Запись телефона или null.</returns>
+    private PhoneCatalogEntry FindPhone(string phoneName)
     {
-        return FindPartType(typeId) != null;
-    }
-
-    /// <summary>
-    /// Модель у бренда есть в базе.
-    /// </summary>
-    public bool ContainsPhoneModel(string brandId, string modelName)
-    {
-        var b = FindBrand(brandId);
-        return b != null && b.HasModel(modelName);
-    }
-
-    /// <summary>
-    /// Иконка типа запчасти.
-    /// </summary>
-    public bool TryGetPartTypeIcon(string typeId, out Sprite icon)
-    {
-        icon = null;
-        var t = FindPartType(typeId);
-        if (t == null)
-            return false;
-
-        icon = t.Icon;
-        return icon != null;
-    }
-
-    /// <summary>
-    /// Отображаемое имя типа запчасти.
-    /// </summary>
-    public bool TryGetPartTypeDisplayName(string typeId, out string displayName)
-    {
-        displayName = null;
-        var t = FindPartType(typeId);
-        if (t == null)
-            return false;
-
-        displayName = t.DisplayName;
-        return true;
-    }
-
-    /// <summary>
-    /// Деталь согласована с базой: тип и пара бренд+модель валидны.
-    /// </summary>
-    public bool IsValidPart(string partTypeId, string brandId, string modelName)
-    {
-        if (string.IsNullOrWhiteSpace(partTypeId) || string.IsNullOrWhiteSpace(brandId) ||
-            string.IsNullOrWhiteSpace(modelName))
-            return false;
-
-        return ContainsPartType(partTypeId) && ContainsPhoneModel(brandId, modelName);
-    }
-
-    private PhoneBrandEntry FindBrand(string brandId)
-    {
-        if (string.IsNullOrWhiteSpace(brandId) || _brands == null)
+        if (string.IsNullOrWhiteSpace(phoneName) || _phoneCatalog == null)
             return null;
 
-        var key = brandId.Trim();
-        for (var i = 0; i < _brands.Length; i++)
+        var key = phoneName.Trim();
+        for (var i = 0; i < _phoneCatalog.Length; i++)
         {
-            var b = _brands[i];
-            if (b == null)
+            var phone = _phoneCatalog[i];
+            if (phone == null)
                 continue;
 
-            if (string.Equals(b.BrandId, key, StringComparison.Ordinal))
-                return b;
+            if (string.Equals(phone.PhoneName, key, StringComparison.Ordinal))
+                return phone;
         }
 
         return null;
     }
 
-    private PhonePartTypeEntry FindPartType(string typeId)
+    /// <summary>
+    /// Ищет категорию запчасти по id.
+    /// </summary>
+    /// <param name="categoryId">Id категории.</param>
+    /// <returns>Категория или null.</returns>
+    private PartCategoryEntry FindPartCategory(string categoryId)
     {
-        if (string.IsNullOrWhiteSpace(typeId) || _partTypes == null)
+        if (string.IsNullOrWhiteSpace(categoryId) || _partCategories == null)
             return null;
 
-        var key = typeId.Trim();
-        for (var i = 0; i < _partTypes.Length; i++)
+        var key = categoryId.Trim();
+        for (var i = 0; i < _partCategories.Length; i++)
         {
-            var t = _partTypes[i];
-            if (t == null)
+            var category = _partCategories[i];
+            if (category == null)
                 continue;
 
-            if (string.Equals(t.TypeId, key, StringComparison.Ordinal))
-                return t;
+            if (string.Equals(category.CategoryId, key, StringComparison.Ordinal))
+                return category;
         }
 
         return null;
     }
 
+    /// <summary>
+    /// Ищет запись запчасти по id.
+    /// </summary>
+    /// <param name="recordId">Id записи.</param>
+    /// <param name="partRecord">Найденная запись.</param>
+    /// <returns>True, если запись найдена.</returns>
+    public bool TryGetPartRecord(string recordId, out PartRecordEntry partRecord)
+    {
+        partRecord = null;
+        if (string.IsNullOrWhiteSpace(recordId) || _partRecords == null)
+            return false;
+
+        var key = recordId.Trim();
+        for (var i = 0; i < _partRecords.Length; i++)
+        {
+            var record = _partRecords[i];
+            if (record == null)
+                continue;
+
+            if (!string.Equals(record.RecordId, key, StringComparison.Ordinal))
+                continue;
+
+            partRecord = record;
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Проверяет консистентность записи запчасти относительно справочников.
+    /// </summary>
+    /// <param name="record">Запись для проверки.</param>
+    /// <returns>True, если запись валидна.</returns>
+    public bool IsValidPartRecord(PartRecordEntry record)
+    {
+        if (record == null || !record.IsValid())
+            return false;
+
+        return ContainsPartCategory(record.PartCategoryId)
+               && ContainsPhoneModel(record.PhoneName, record.PhoneModelName);
+    }
 }

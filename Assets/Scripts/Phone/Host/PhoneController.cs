@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Корпус телефона: идентичность модели из базы и доступ к подсистемам (слоты, в будущем экран, разбор, пулы и т.д.).
@@ -8,12 +9,13 @@ using UnityEngine;
 public sealed class PhoneController : MonoBehaviour, IPhoneModelIdentity
 {
     /// <summary>
-    /// Бренд телефона (Brand Id из базы).
+    /// Название телефона из базы.
     /// </summary>
-    [Tooltip("Бренд из Phone Parts Database.")]
-    [ValueDropdown(nameof(EditorBrandItems), IsUniqueList = false, DropdownTitle = "Бренд")]
+    [FormerlySerializedAs("_phoneBrandId")]
+    [Tooltip("Название телефона из Phone Parts Database.")]
+    [ValueDropdown(nameof(EditorPhoneNameItems), IsUniqueList = false, DropdownTitle = "Название телефона")]
     [SerializeField]
-    private string _phoneBrandId;
+    private string _phoneName;
 
     /// <summary>
     /// Модель телефона в рамках бренда.
@@ -30,8 +32,8 @@ public sealed class PhoneController : MonoBehaviour, IPhoneModelIdentity
     private PhoneSlotService _slotService = null!;
 
     /// <inheritdoc />
-    public string PhoneBrandId =>
-        string.IsNullOrWhiteSpace(_phoneBrandId) ? string.Empty : _phoneBrandId.Trim();
+    public string PhoneName =>
+        string.IsNullOrWhiteSpace(_phoneName) ? string.Empty : _phoneName.Trim();
 
     /// <inheritdoc />
     public string PhoneModelName =>
@@ -39,7 +41,7 @@ public sealed class PhoneController : MonoBehaviour, IPhoneModelIdentity
 
     /// <inheritdoc />
     public bool HasPhoneModelSpecified =>
-        !string.IsNullOrWhiteSpace(_phoneBrandId) && !string.IsNullOrWhiteSpace(_phoneModelName);
+        !string.IsNullOrWhiteSpace(_phoneName) && !string.IsNullOrWhiteSpace(_phoneModelName);
 
     /// <summary>
     /// Слоты и установка запчастей.
@@ -48,21 +50,21 @@ public sealed class PhoneController : MonoBehaviour, IPhoneModelIdentity
 
 #if UNITY_EDITOR
     /// <summary>
-    /// Элементы выпадающего списка брендов для Odin.
+    /// Элементы выпадающего списка названий телефонов для Odin.
     /// </summary>
-    private IEnumerable<ValueDropdownItem<string>> EditorBrandItems() =>
-        PhonePartsDatabaseDropdowns.BrandItems(includeAnyOption: false);
+    private IEnumerable<ValueDropdownItem<string>> EditorPhoneNameItems() =>
+        PhonePartsDatabaseDropdowns.PhoneNameItems(includeAnyOption: false);
 
     /// <summary>
     /// Элементы выпадающего списка моделей для Odin.
     /// </summary>
     private IEnumerable<ValueDropdownItem<string>> EditorModelItems() =>
-        PhonePartsDatabaseDropdowns.ModelItemsForBrand(_phoneBrandId, includeAnyOption: false);
+        PhonePartsDatabaseDropdowns.ModelItemsForPhone(_phoneName, includeAnyOption: false);
 #else
     /// <summary>
     /// Заглушка сборки без редактора.
     /// </summary>
-    private IEnumerable<ValueDropdownItem<string>> EditorBrandItems()
+    private IEnumerable<ValueDropdownItem<string>> EditorPhoneNameItems()
     {
         yield break;
     }

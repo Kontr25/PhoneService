@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Слот ремонта на корпусе: сокет, тип запчасти, превью установки.
+/// Слот ремонта на корпусе: сокет, категория запчасти, превью установки.
 /// </summary>
 public interface IPhoneRepairSlot
 {
@@ -11,11 +11,11 @@ public interface IPhoneRepairSlot
     Transform Socket { get; }
 
     /// <summary>
-    /// Принимает ли слот указанный тип запчасти.
+    /// Принимает ли слот указанную категорию запчасти.
     /// </summary>
-    /// <param name="partTypeId">Type Id детали.</param>
-    /// <returns>True, если тип подходит.</returns>
-    bool AcceptsPartType(string partTypeId);
+    /// <param name="partCategoryId">Category Id детали.</param>
+    /// <returns>True, если категория подходит.</returns>
+    bool AcceptsPartCategory(string partCategoryId);
 
     /// <summary>
     /// Показывает или скрывает превью детали в слоте.

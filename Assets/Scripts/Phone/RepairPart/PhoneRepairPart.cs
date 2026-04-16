@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 /// <summary>
-/// Запчасть: идентичность из базы; при перетаскивании оркестрирует пробу, превью слота и установку через сервисы.
+/// Запчасть: идентичность и визуал загружаются из записи базы; при перетаскивании оркестрирует пробу, превью слота и установку через сервисы.
 /// </summary>
 public sealed class PhoneRepairPart : Grabbable, IGrabLifecycle, IGrabPhysicsTick
 {
@@ -16,28 +17,63 @@ public sealed class PhoneRepairPart : Grabbable, IGrabLifecycle, IGrabPhysicsTic
     private MeshFilter _installPreviewMeshFilter;
 
     /// <summary>
-    /// Type Id (battery, camera…).
+    /// Рендерер визуала запчасти.
     /// </summary>
-    [Tooltip("Тип запчасти из базы.")]
-    [ValueDropdown(nameof(EditorPartTypeItems), IsUniqueList = false, DropdownTitle = "Тип запчасти")]
     [SerializeField]
-    private string _partTypeId;
+    private MeshRenderer _partMeshRenderer;
 
     /// <summary>
-    /// Бренд телефона, под который деталь.
+    /// Id записи запчасти в базе.
     /// </summary>
-    [Tooltip("Бренд из базы.")]
-    [ValueDropdown(nameof(EditorBrandItems), IsUniqueList = false, DropdownTitle = "Бренд")]
+    [Tooltip("Выберите запись из Phone Parts Database.")]
+    [ValueDropdown(nameof(EditorPartRecordItems), IsUniqueList = false, DropdownTitle = "Запись запчасти")]
     [SerializeField]
-    private string _partBrandId;
+    private string _partRecordId;
+
+    /// <summary>
+    /// Id категории запчасти.
+    /// </summary>
+    [FormerlySerializedAs("_partTypeId")]
+    [HideInInspector]
+    [SerializeField]
+    private string _partCategoryId;
+
+    /// <summary>
+    /// Название телефона, для которого предназначена запчасть.
+    /// </summary>
+    [FormerlySerializedAs("_partBrandId")]
+    [HideInInspector]
+    [SerializeField]
+    private string _partPhoneName;
 
     /// <summary>
     /// Модель телефона.
     /// </summary>
-    [Tooltip("Модель для выбранного бренда.")]
-    [ValueDropdown(nameof(EditorModelItems), IsUniqueList = false, DropdownTitle = "Модель")]
+    [HideInInspector]
     [SerializeField]
     private string _partModelName;
+
+    /// <summary>
+    /// Качество запчасти.
+    /// </summary>
+    [HideInInspector]
+    [SerializeField]
+    private PartQualityType _partQualityType;
+
+    /// <summary>
+    /// Стоимость запчасти.
+    /// </summary>
+    [HideInInspector]
+    [SerializeField]
+    private int _partCost;
+
+    /// <summary>
+    /// Описание запчасти.
+    /// </summary>
+    [HideInInspector]
+    [SerializeField]
+    [TextArea]
+    private string _partDescription;
 
     /// <summary>
     /// Маска луча вниз от детали (первое попадание).
@@ -120,16 +156,16 @@ public sealed class PhoneRepairPart : Grabbable, IGrabLifecycle, IGrabPhysicsTic
     private IPhonePartRigidbodyService _rigidbodyService = null!;
 
     /// <summary>
-    /// Type Id детали.
+    /// Id категории детали.
     /// </summary>
-    public string PartTypeId =>
-        string.IsNullOrWhiteSpace(_partTypeId) ? string.Empty : _partTypeId.Trim();
+    public string PartCategoryId =>
+        string.IsNullOrWhiteSpace(_partCategoryId) ? string.Empty : _partCategoryId.Trim();
 
     /// <summary>
-    /// Brand Id детали.
+    /// Название телефона детали.
     /// </summary>
-    public string PartBrandId =>
-        string.IsNullOrWhiteSpace(_partBrandId) ? string.Empty : _partBrandId.Trim();
+    public string PartPhoneName =>
+        string.IsNullOrWhiteSpace(_partPhoneName) ? string.Empty : _partPhoneName.Trim();
 
     /// <summary>
     /// Модель детали.
@@ -138,10 +174,25 @@ public sealed class PhoneRepairPart : Grabbable, IGrabLifecycle, IGrabPhysicsTic
         string.IsNullOrWhiteSpace(_partModelName) ? string.Empty : _partModelName.Trim();
 
     /// <summary>
-    /// Заданы ли бренд и модель.
+    /// Качество запчасти.
+    /// </summary>
+    public PartQualityType PartQualityType => _partQualityType;
+
+    /// <summary>
+    /// Стоимость запчасти.
+    /// </summary>
+    public int PartCost => _partCost;
+
+    /// <summary>
+    /// Описание запчасти.
+    /// </summary>
+    public string PartDescription => _partDescription ?? string.Empty;
+
+    /// <summary>
+    /// Заданы ли название телефона и модель.
     /// </summary>
     public bool HasModelSpecified =>
-        !string.IsNullOrWhiteSpace(_partBrandId) && !string.IsNullOrWhiteSpace(_partModelName);
+        !string.IsNullOrWhiteSpace(_partPhoneName) && !string.IsNullOrWhiteSpace(_partModelName);
 
     /// <summary>
     /// Телефон установки.
@@ -179,10 +230,31 @@ public sealed class PhoneRepairPart : Grabbable, IGrabLifecycle, IGrabPhysicsTic
     /// <inheritdoc />
     protected override void OnGrabbableAwake()
     {
+        ApplyDatabaseRecord();
         _installPreviewMesh = _installPreviewMeshFilter.mesh;
         _slotProbeCollider = _slotProbeSphere.ProbeCollider;
         _previewCursor.SlotIndex = -1;
         _previewCursor.Phone = null;
+    }
+
+    /// <summary>
+    /// Инициализирует запчасть данными из записи базы.
+    /// </summary>
+    /// <param name="record">Запись запчасти.</param>
+    public void InitializeFromDatabaseRecord(PartRecordEntry record)
+    {
+        if (record == null)
+            throw new System.InvalidOperationException();
+
+        _partCategoryId = record.PartCategoryId;
+        _partPhoneName = record.PhoneName;
+        _partModelName = record.PhoneModelName;
+        _partQualityType = record.PartQualityType;
+        _partCost = record.Cost;
+        _partDescription = record.Description;
+
+        _installPreviewMeshFilter.sharedMesh = record.PartMesh;
+        _partMeshRenderer.sharedMaterial = record.PartMaterial;
     }
 
     /// <inheritdoc />
@@ -225,8 +297,8 @@ public sealed class PhoneRepairPart : Grabbable, IGrabLifecycle, IGrabPhysicsTic
                 case SlotInstallFit.WrongModel:
                     _installMotion.BeginTweenToSocket(this, phone, slot, _installTweenDuration, _installEase);
                     break;
-                case SlotInstallFit.WrongType:
-                    _installMotion.ApplyWrongTypeBounce(this, _wrongTypeBounceImpulse);
+                case SlotInstallFit.WrongCategory:
+                    _installMotion.ApplyWrongCategoryBounce(this, _wrongTypeBounceImpulse);
                     break;
             }
         }
@@ -330,56 +402,49 @@ public sealed class PhoneRepairPart : Grabbable, IGrabLifecycle, IGrabPhysicsTic
     }
 
     /// <summary>
-    /// Применяет отскок по горизонтали при неверном типе слота.
+    /// Применяет отскок по горизонтали при неверной категории слота.
     /// </summary>
     /// <param name="impulseMagnitude">Величина импульса.</param>
-    internal void DoRigidbodyApplyWrongTypeBounce(float impulseMagnitude)
+    internal void DoRigidbodyApplyWrongCategoryBounce(float impulseMagnitude)
     {
         _rigidbodyService.ApplyHorizontalBounce(PhysicsBody, impulseMagnitude);
     }
 
 #if UNITY_EDITOR
     /// <summary>
-    /// Элементы выпадающего списка типов запчастей для Odin.
+    /// Элементы выпадающего списка записей запчастей для Odin.
     /// </summary>
-    private IEnumerable<ValueDropdownItem<string>> EditorPartTypeItems() =>
-        PhonePartsDatabaseDropdowns.PartTypeItems(includeAnyOption: false);
-
-    /// <summary>
-    /// Элементы выпадающего списка брендов для Odin.
-    /// </summary>
-    private IEnumerable<ValueDropdownItem<string>> EditorBrandItems() =>
-        PhonePartsDatabaseDropdowns.BrandItems(includeAnyOption: false);
-
-    /// <summary>
-    /// Элементы выпадающего списка моделей для Odin.
-    /// </summary>
-    private IEnumerable<ValueDropdownItem<string>> EditorModelItems() =>
-        PhonePartsDatabaseDropdowns.ModelItemsForBrand(_partBrandId, includeAnyOption: false);
+    private IEnumerable<ValueDropdownItem<string>> EditorPartRecordItems() =>
+        PhonePartsDatabaseDropdowns.PartRecordItems(includeAnyOption: true);
 
 #else
     /// <summary>
     /// Заглушка сборки без редактора.
     /// </summary>
-    private IEnumerable<ValueDropdownItem<string>> EditorPartTypeItems()
-    {
-        yield break;
-    }
-
-    /// <summary>
-    /// Заглушка сборки без редактора.
-    /// </summary>
-    private IEnumerable<ValueDropdownItem<string>> EditorBrandItems()
-    {
-        yield break;
-    }
-
-    /// <summary>
-    /// Заглушка сборки без редактора.
-    /// </summary>
-    private IEnumerable<ValueDropdownItem<string>> EditorModelItems()
+    private IEnumerable<ValueDropdownItem<string>> EditorPartRecordItems()
     {
         yield break;
     }
 #endif
+
+    /// <summary>
+    /// Применяет запись из базы по идентификатору.
+    /// </summary>
+    private void ApplyDatabaseRecord()
+    {
+        if (string.IsNullOrWhiteSpace(_partRecordId))
+            throw new System.InvalidOperationException();
+
+        var database = PhonePartsDatabaseAccess.TryGetRuntime();
+        if (database == null)
+            throw new System.InvalidOperationException();
+
+        if (!database.TryGetPartRecord(_partRecordId, out var record))
+            throw new System.InvalidOperationException();
+
+        if (!database.IsValidPartRecord(record))
+            throw new System.InvalidOperationException();
+
+        InitializeFromDatabaseRecord(record);
+    }
 }

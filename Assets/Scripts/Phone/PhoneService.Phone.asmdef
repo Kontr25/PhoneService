@@ -1,21 +1,21 @@
 {
-  "name": "PhoneService.Phone",
-  "rootNamespace": "",
-  "references": [
-    "GUID:311f5c0c021ae4f4b9256a0e4a0cd3ab",
-    "PhoneService.PhonePartsDatabase",
-    "Zenject"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [
-    "Sirenix.OdinInspector.Attributes.dll",
-    "DOTween.dll"
-  ],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "PhoneService.Phone",
+    "rootNamespace": "",
+    "references": [
+        "GUID:311f5c0c021ae4f4b9256a0e4a0cd3ab",
+        "GUID:026499044fbe67544bc861a0a0859125",
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [
+        "Sirenix.OdinInspector.Attributes.dll",
+        "DOTween.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

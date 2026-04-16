@@ -1,7 +1,7 @@
 using DG.Tweening;
 
 /// <summary>
-/// Движение запчасти при установке (твин к сокету) и отскок при неверном типе.
+/// Движение запчасти при установке (твин к сокету) и отскок при неверной категории.
 /// </summary>
 public interface IPhonePartInstallMotion
 {
@@ -16,9 +16,9 @@ public interface IPhonePartInstallMotion
     void BeginTweenToSocket(PhoneRepairPart part, PhoneController phone, int slotIndex, float duration, Ease ease);
 
     /// <summary>
-    /// Импульс в горизонтальной плоскости для реакции на неверный тип слота.
+    /// Импульс в горизонтальной плоскости для реакции на неверную категорию слота.
     /// </summary>
     /// <param name="part">Запчасть.</param>
     /// <param name="impulseMagnitude">Величина импульса.</param>
-    void ApplyWrongTypeBounce(PhoneRepairPart part, float impulseMagnitude);
+    void ApplyWrongCategoryBounce(PhoneRepairPart part, float impulseMagnitude);
 }
